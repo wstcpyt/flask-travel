@@ -11,6 +11,8 @@ app = Flask(__name__)
 api = Api(app)
 
 class TaxiPredict(Resource):
+    def get(self):
+        return "hello world"
     def put(self):
         startgeocode_json = (request.form['startgeocode'])
         endgeocode_json = (request.form['endgeocode'])
