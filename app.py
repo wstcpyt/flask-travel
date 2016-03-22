@@ -28,7 +28,6 @@ class TaxiPredict(Resource):
         tripdist = float(tripdistance_json.split(" ")[0])
         hour = int(request.form['hour'])
         dayofweek = int(request.form['dayofweek'])
-        print dayofweek
         lowspeedclf = joblib.load(os.path.join(APP_STATIC, 'costtime.pkl'))
         lowspeedx = [startlat,startlng,endlat,endlng,hour,dayofweek,tripdist]
         lowspeedy = int(lowspeedclf.predict(lowspeedx)[0])
