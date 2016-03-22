@@ -6,6 +6,7 @@ import os
 
 # This is a init commit from yutong
 app = Flask(__name__)
+app.config['DEBUG'] = True
 
 # restful api
 api = Api(app)
@@ -27,6 +28,7 @@ class TaxiPredict(Resource):
         tripdist = float(tripdistance_json.split(" ")[0])
         hour = int(request.form['hour'])
         dayofweek = int(request.form['dayofweek'])
+        print dayofweek
         lowspeedclf = joblib.load(os.path.join(APP_STATIC, 'costtime.pkl'))
         lowspeedx = [startlat,startlng,endlat,endlng,hour,dayofweek,tripdist]
         lowspeedy = int(lowspeedclf.predict(lowspeedx)[0])
@@ -53,12 +55,9 @@ def after_request(response):
   response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
   return response
 
+
+
 @app.route('/')
-def main():
-    return redirect('/index')
-
-
-@app.route('/index')
 def index():
     return render_template('index.html')
 
