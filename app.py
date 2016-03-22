@@ -6,7 +6,7 @@ import os
 
 # This is a init commit from yutong
 app = Flask(__name__)
-app.config['DEBUG'] = True
+app.config['DEBUG'] = False
 
 # restful api
 api = Api(app)
