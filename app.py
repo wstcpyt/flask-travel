@@ -5,6 +5,7 @@ from settings import APP_STATIC
 import dill
 import os
 import pandas as pd
+import Geohash
 
 # This is a init commit from yutong
 app = Flask(__name__)
@@ -54,10 +55,13 @@ class DensityPredict(Resource):
             uniquegeohash = dill.load(f)
         with open(os.path.join(APP_STATIC, 'predict_pickup_density.pkl'), 'rb') as f:
             model = dill.load(f)
-        x_dict ={"pickup_geohash":"dr5rec9","hour":12,"dayofweek":2,'month':5}
-        x_df = pd.DataFrame([x_dict])
+        x_dict =[{"pickup_geohash":geostr,"hour":12,"dayofweek":2,'month':5} for geostr in uniquegeohash]
+        x_df = pd.DataFrame(x_dict)
         y = model.predict(x_df)
-        return str(y[0])
+        yzipgeo = zip(y, uniquegeohash)
+        sortedlist = sorted(yzipgeo,key=lambda x: -x[0])
+        geodecode = Geohash.decode(sortedlist[1][1])
+        return str(geodecode)
 api.add_resource(DensityPredict,'/densitypredict')
 
 #CORS ENABLE
