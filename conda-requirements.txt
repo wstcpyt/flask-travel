@@ -2,3 +2,4 @@ nomkl
 scikit-learn
 scipy
 numpy
+pandas

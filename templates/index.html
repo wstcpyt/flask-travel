@@ -236,7 +236,7 @@
                     $.ajax({
                                 method: "PUT",
                                 data: { startgeocode: JSON.stringify(startgeocode),endgeocode:JSON.stringify(endgeocode), tripdistance:tripdistance, hour:h, dayofweek:dayofweek},
-                                url: "/taxipredict"
+                                url: "https://traveladvisor.herokuapp.com/taxipredict"
                             })
                             .done(function( data ) {
                                 $("#lowspeedtime").text(data.lowspeedtime + " min");

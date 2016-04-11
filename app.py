@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, request
 from flask_restful import Resource, Api
 from sklearn.externals import joblib
 from settings import APP_STATIC
+import dill
 import os
 
 # This is a init commit from yutong
@@ -45,6 +46,16 @@ class TaxiPredict(Resource):
         return {"lowspeedtime":lowspeedy, "tripduration":trip_duration_y, "duration_list":duration_list, "lowspeed_list":lowspeed_list}
 
 api.add_resource(TaxiPredict,'/taxipredict')
+
+class DensityPredict(Resource):
+    def get(self):
+        with open(os.path.join(APP_STATIC, 'uniquegeohash.pkl'), 'rb') as f:
+            uniquegeohash = dill.load(f)
+        with open(os.path.join(APP_STATIC, 'predict_pickup_density.pkl'), 'rb') as f:
+            model = dill.load(f)
+
+        return "predict density"
+api.add_resource(DensityPredict,'/densitypredict')
 
 #CORS ENABLE
 @app.after_request
