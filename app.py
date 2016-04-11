@@ -4,6 +4,7 @@ from sklearn.externals import joblib
 from settings import APP_STATIC
 import dill
 import os
+import pandas as pd
 
 # This is a init commit from yutong
 app = Flask(__name__)
@@ -53,8 +54,10 @@ class DensityPredict(Resource):
             uniquegeohash = dill.load(f)
         with open(os.path.join(APP_STATIC, 'predict_pickup_density.pkl'), 'rb') as f:
             model = dill.load(f)
-
-        return "predict density"
+        x_dict ={"pickup_geohash":"dr5rec9","hour":12,"dayofweek":2,'month':5}
+        x_df = pd.DataFrame([x_dict])
+        y = model.predict(x_df)
+        return str(y[0])
 api.add_resource(DensityPredict,'/densitypredict')
 
 #CORS ENABLE
