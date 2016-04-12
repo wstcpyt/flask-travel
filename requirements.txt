@@ -8,3 +8,4 @@ requests>=2.2.1
 simplejson==3.8.0
 flask-restful
 Geohash == 1.0
+geocoder==1.11.2

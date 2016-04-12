@@ -6,6 +6,7 @@ import dill
 import os
 import pandas as pd
 import Geohash
+import geocoder
 
 # This is a init commit from yutong
 app = Flask(__name__)
@@ -53,18 +54,32 @@ class DensityPredict(Resource):
     def get(self):
         return "predict density"
     def put(self):
-        hour = (request.form['hour'])
+        hour = int(request.form['hour'])
         with open(os.path.join(APP_STATIC, 'uniquegeohash.pkl'), 'rb') as f:
             uniquegeohash = dill.load(f)
         with open(os.path.join(APP_STATIC, 'predict_pickup_density.pkl'), 'rb') as f:
             model = dill.load(f)
-        x_dict = [{"pickup_geohash": geostr, "hour": hour, "dayofweek": 2, 'month': 5} for geostr in uniquegeohash]
+        x_dict = [{"pickup_geohash": geostr, "hour": 12, "dayofweek": 2, 'month': 5} for geostr in uniquegeohash]
         x_df = pd.DataFrame(x_dict)
         y = model.predict(x_df)
         geodecode = [Geohash.decode(geocode) for geocode in uniquegeohash]
         yzipgeo = zip(y, geodecode)
         sortedlist = sorted(yzipgeo, key=lambda x: -x[0])
-        return {"top10": sortedlist[0:10]}
+        top10address = []
+        top10dict = {}
+        for y, geodecode in sortedlist[0:50]:
+            key = ",".join(geodecode)
+            top10dict[key] = top10dict.get(key,0) + y
+        top10res = []
+        for key in top10dict:
+            temptuple = (float(key.split(",")[0]),float(key.split(",")[1]))
+            top10res.append([top10dict[key],temptuple])
+        top10res = sorted(top10res,key=lambda x:-x[0])
+        top10res = top10res[0:10] if len(top10res) > 10 else top10res
+        for u,geodecode in top10res:
+            g = geocoder.google([geodecode[0], geodecode[1]], method='reverse').address
+            top10address.append(g)
+        return {"top10": sortedlist[0:10],"top10address":top10address}
 
 api.add_resource(DensityPredict,'/densitypredict')
 
