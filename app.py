@@ -58,10 +58,10 @@ class DensityPredict(Resource):
         x_dict =[{"pickup_geohash":geostr,"hour":12,"dayofweek":2,'month':5} for geostr in uniquegeohash]
         x_df = pd.DataFrame(x_dict)
         y = model.predict(x_df)
-        yzipgeo = zip(y, uniquegeohash)
+        geodecode = [Geohash.decode(geocode) for geocode in uniquegeohash]
+        yzipgeo = zip(y, geodecode)
         sortedlist = sorted(yzipgeo,key=lambda x: -x[0])
-        geodecode = Geohash.decode(sortedlist[1][1])
-        return str(geodecode)
+        return {"top10":sortedlist[0:10]}
 api.add_resource(DensityPredict,'/densitypredict')
 
 #CORS ENABLE
