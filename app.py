@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import Geohash
 import geocoder
+from datetime import datetime
 
 # This is a init commit from yutong
 app = Flask(__name__)
@@ -55,11 +56,17 @@ class DensityPredict(Resource):
         return "predict density"
     def put(self):
         hour = int(request.form['hour'])
+        date = request.form['date']
+        prcp = float(request.form['prcp'])*100
+        snow = float(request.form['snow']) * 10
+        tmax = float(request.form['tmax']) * 10
+        tmin = float(request.form['tmin']) * 10
+        date = pd.to_datetime(date)
         with open(os.path.join(APP_STATIC, 'uniquegeohash.pkl'), 'rb') as f:
             uniquegeohash = dill.load(f)
         with open(os.path.join(APP_STATIC, 'predict_pickup_density.pkl'), 'rb') as f:
             model = dill.load(f)
-        x_dict = [{"pickup_geohash": geostr, "hour": 12, "dayofweek": 2, 'month': 5} for geostr in uniquegeohash]
+        x_dict = [{"pickup_geohash": geostr, "hour": hour, "dayofweek": date.dayofweek, 'month': date.month,'PRCP':prcp,'SNOW':snow,'TMAX':tmax,'TMIN':tmin} for geostr in uniquegeohash]
         x_df = pd.DataFrame(x_dict)
         y = model.predict(x_df)
         geodecode = [Geohash.decode(geocode) for geocode in uniquegeohash]
