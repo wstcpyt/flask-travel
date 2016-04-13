@@ -86,7 +86,7 @@ class DensityPredict(Resource):
         for u,geodecode in top10res:
             g = geocoder.google([geodecode[0], geodecode[1]], method='reverse').address
             top10address.append(g)
-        return {"top10": sortedlist[0:10],"top10address":top10address}
+        return {"top10": top10res,"top10address":top10address}
 
 api.add_resource(DensityPredict,'/densitypredict')
 
